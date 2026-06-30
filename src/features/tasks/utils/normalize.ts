@@ -65,7 +65,7 @@ function normalizeUpdatedAt(raw: unknown): number {
   return 0;
 }
 
-export function normalizeTask(raw: unknown): Task | null {
+function normalizeTask(raw: unknown): Task | null {
   if (
     !isRecord(raw) ||
     typeof raw.id !== "string" ||
@@ -87,7 +87,7 @@ export function normalizeTask(raw: unknown): Task | null {
   };
 }
 
-export function normalizeTasksPage(raw: unknown): TasksPage {
+function normalizeTasksPage(raw: unknown): TasksPage {
   if (!isRecord(raw) || !Array.isArray(raw.items)) {
     console.warn("[normalizeTasksPage] malformed response:", raw);
     return { page: 1, pageSize: 0, total: 0, items: [] };
@@ -104,3 +104,12 @@ export function normalizeTasksPage(raw: unknown): TasksPage {
     items,
   };
 }
+
+export {
+  normalizeStatus,
+  normalizeType,
+  normalizeAssignee,
+  normalizeTasksPage,
+  normalizeTask,
+  isRecord,
+};
