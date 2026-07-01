@@ -7,6 +7,12 @@ import { taskEventReceived, wsStatusChanged } from "../store/tasksSlice";
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 30000;
 
+function getWsUrl() {
+  const configured = process.env.NEXT_PUBLIC_WS_URL;
+  if (!configured) return "ws://localhost:4000/ws";
+  return configured.endsWith("/ws") ? configured : `${configured}/ws`;
+}
+
 export function useTaskFeed() {
   const dispatch = useAppDispatch();
   const attemptRef = useRef(0);
@@ -18,7 +24,7 @@ export function useTaskFeed() {
 
     function connect() {
       dispatch(wsStatusChanged("connecting"));
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}/ws`);
+      const ws = new WebSocket(getWsUrl());
       wsRef.current = ws;
 
       ws.onopen = () => {

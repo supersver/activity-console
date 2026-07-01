@@ -16,9 +16,12 @@ export interface TaskFilters {
   status?: TaskStatus;
   type?: TaskType;
   assigneeId?: string;
+  search?: string;
+  sortBy?: "updatedAt" | "title";
+  sortDirection?: "asc" | "desc";
 }
 
-// Factory, not a singleton selector — each component instance needs its
+// Factory, not a singleton selector: each component instance needs its
 // own memoized selector or they'd thrash each other's cache when filters
 // differ across instances. Pair with useMemo in the consuming hook.
 export const makeSelectFilteredSortedTasks = () =>
@@ -26,11 +29,40 @@ export const makeSelectFilteredSortedTasks = () =>
     [selectAllTasks, (_: RootState, filters: TaskFilters) => filters],
     (tasks, filters) => {
       let result = tasks;
-      if (filters.status)
-        result = result.filter((t) => t.status === filters.status);
-      if (filters.type) result = result.filter((t) => t.type === filters.type);
-      if (filters.assigneeId)
-        result = result.filter((t) => t.assignee?.id === filters.assigneeId);
-      return [...result].sort((a, b) => b.updatedAt - a.updatedAt);
+
+      if (filters.status) {
+        result = result.filter((task) => task.status === filters.status);
+      }
+
+      if (filters.type) {
+        result = result.filter((task) => task.type === filters.type);
+      }
+
+      if (filters.assigneeId) {
+        result = result.filter(
+          (task) => task.assignee?.id === filters.assigneeId,
+        );
+      }
+
+      if (filters.search?.trim()) {
+        const query = filters.search.trim().toLowerCase();
+        result = result.filter(
+          (task) =>
+            task.id.toLowerCase().includes(query) ||
+            task.title.toLowerCase().includes(query) ||
+            task.assignee?.name.toLowerCase().includes(query),
+        );
+      }
+
+      const direction = filters.sortDirection === "asc" ? 1 : -1;
+      const sortBy = filters.sortBy ?? "updatedAt";
+
+      return [...result].sort((a, b) => {
+        if (sortBy === "title") {
+          return direction * a.title.localeCompare(b.title);
+        }
+
+        return direction * (a.updatedAt - b.updatedAt);
+      });
     },
   );

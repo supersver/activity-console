@@ -109,6 +109,7 @@ export {
   normalizeStatus,
   normalizeType,
   normalizeAssignee,
+  normalizeUpdatedAt,
   normalizeTasksPage,
   normalizeTask,
   isRecord,

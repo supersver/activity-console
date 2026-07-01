@@ -8,6 +8,7 @@ import {
   isRecord,
   normalizeAssignee,
   normalizeStatus,
+  normalizeUpdatedAt,
 } from "../utils/normalize";
 import type { Task } from "../types";
 import type { RootState } from "@/lib/store";
@@ -18,6 +19,10 @@ interface TasksMeta {
   page: number;
   pageSize: number;
   total: number;
+  dataSource: "empty" | "cached" | "fresh";
+  cachedAt: number | null;
+  lastFreshAt: number | null;
+  lastLiveEvent: string | null;
   wsStatus: "idle" | "connecting" | "open" | "closed" | "error";
 }
 
@@ -25,6 +30,10 @@ const initialState = tasksAdapter.getInitialState<TasksMeta>({
   page: 1,
   pageSize: 0,
   total: 0,
+  dataSource: "empty",
+  cachedAt: null,
+  lastFreshAt: null,
+  lastLiveEvent: null,
   wsStatus: "idle",
 });
 
@@ -70,6 +79,7 @@ const tasksSlice = createSlice({
       }
 
       const { kind, payload } = event;
+      state.lastLiveEvent = kind;
 
       switch (kind) {
         case "task.updated": {
@@ -83,7 +93,7 @@ const tasksSlice = createSlice({
               ...(typeof payload.status === "string" && {
                 status: normalizeStatus(payload.status),
               }),
-              updatedAt: Date.now(),
+              updatedAt: normalizeUpdatedAt(payload.updatedAt) || Date.now(),
             },
           });
           break;
@@ -123,6 +133,24 @@ const tasksSlice = createSlice({
           console.warn("[tasksSlice] unrecognized event kind", kind);
       }
     },
+
+    tasksCacheLoaded(
+      state,
+      action: PayloadAction<{
+        page: number;
+        pageSize: number;
+        total: number;
+        cachedAt: number;
+        items: Task[];
+      }>,
+    ) {
+      tasksAdapter.setAll(state, action.payload.items);
+      state.page = action.payload.page;
+      state.pageSize = action.payload.pageSize;
+      state.total = action.payload.total;
+      state.cachedAt = action.payload.cachedAt;
+      state.dataSource = "cached";
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -132,12 +160,21 @@ const tasksSlice = createSlice({
         state.page = action.payload.page;
         state.pageSize = action.payload.pageSize;
         state.total = action.payload.total;
+        state.dataSource = "fresh";
+        state.lastFreshAt = Date.now();
+      },
+    );
+    builder.addMatcher(
+      tasksApi.endpoints.getTaskById.matchFulfilled,
+      (state, action) => {
+        tasksAdapter.upsertOne(state, action.payload);
       },
     );
   },
 });
 
-export const { wsStatusChanged, taskEventReceived } = tasksSlice.actions;
+export const { taskEventReceived, tasksCacheLoaded, wsStatusChanged } =
+  tasksSlice.actions;
 export const tasksReducer = tasksSlice.reducer;
 export default tasksReducer;
 
@@ -148,3 +185,9 @@ export const selectPageInfo = (state: RootState) => ({
   pageSize: state.tasks.pageSize,
   total: state.tasks.total,
 });
+
+export const selectDataSource = (state: RootState) => state.tasks.dataSource;
+export const selectCachedAt = (state: RootState) => state.tasks.cachedAt;
+export const selectLastFreshAt = (state: RootState) => state.tasks.lastFreshAt;
+export const selectLastLiveEvent = (state: RootState) =>
+  state.tasks.lastLiveEvent;
