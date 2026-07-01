@@ -1,5 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { tasksAdapter } from "./tasksSlice";
+import { selectTaskPageIds, tasksAdapter } from "./tasksSlice";
 import type { RootState } from "@/lib/store";
 import type { TasksState } from "./tasksSlice";
 import type { TaskStatus, TaskType } from "../types";
@@ -11,6 +11,15 @@ const adapterSelectors = tasksAdapter.getSelectors<RootState>(
 export const selectAllTasks = adapterSelectors.selectAll;
 export const selectTaskById = adapterSelectors.selectById;
 export const selectTaskIds = adapterSelectors.selectIds;
+export const selectTaskEntities = adapterSelectors.selectEntities;
+
+export const selectCurrentPageTasks = createSelector(
+  [selectTaskPageIds, selectTaskEntities],
+  (pageIds, entities) =>
+    pageIds
+      .map((id) => entities[id])
+      .filter((task): task is NonNullable<typeof task> => Boolean(task)),
+);
 
 export interface TaskFilters {
   status?: TaskStatus;
@@ -26,7 +35,7 @@ export interface TaskFilters {
 // differ across instances. Pair with useMemo in the consuming hook.
 export const makeSelectFilteredSortedTasks = () =>
   createSelector(
-    [selectAllTasks, (_: RootState, filters: TaskFilters) => filters],
+    [selectCurrentPageTasks, (_: RootState, filters: TaskFilters) => filters],
     (tasks, filters) => {
       let result = tasks;
 

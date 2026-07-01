@@ -26,9 +26,9 @@ import {
 } from "./TaskToolbar";
 
 export function TaskConsole() {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [search, setSearch] = useState("");
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(20);
+  const [search, setSearch] = useState<string>("");
   const [type, setType] = useState<TaskType | "all">("all");
   const [status, setStatus] = useState<TaskStatus | "all">("all");
   const [sortBy, setSortBy] = useState<TaskSortBy>("updatedAt");

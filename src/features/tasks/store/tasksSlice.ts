@@ -20,6 +20,7 @@ interface TasksMeta {
   page: number;
   pageSize: number;
   total: number;
+  currentPageIds: string[];
   dataSource: "empty" | "cached" | "fresh";
   cachedAt: number | null;
   lastFreshAt: number | null;
@@ -31,6 +32,7 @@ const initialState = tasksAdapter.getInitialState<TasksMeta>({
   page: 1,
   pageSize: 0,
   total: 0,
+  currentPageIds: [],
   dataSource: "empty",
   cachedAt: null,
   lastFreshAt: null,
@@ -149,6 +151,7 @@ const tasksSlice = createSlice({
       state.page = action.payload.page;
       state.pageSize = action.payload.pageSize;
       state.total = action.payload.total;
+      state.currentPageIds = action.payload.items.map((task) => task.id);
       state.cachedAt = action.payload.cachedAt;
       state.dataSource = "cached";
     },
@@ -161,6 +164,7 @@ const tasksSlice = createSlice({
         state.page = action.payload.page;
         state.pageSize = action.payload.pageSize;
         state.total = action.payload.total;
+        state.currentPageIds = action.payload.items.map((task) => task.id);
         state.dataSource = "fresh";
         state.lastFreshAt = Date.now();
       },
@@ -183,6 +187,8 @@ export const selectWsStatus = (state: RootState) => state.tasks.wsStatus;
 export const selectTaskPage = (state: RootState) => state.tasks.page;
 export const selectTaskPageSize = (state: RootState) => state.tasks.pageSize;
 export const selectTaskTotal = (state: RootState) => state.tasks.total;
+export const selectTaskPageIds = (state: RootState) =>
+  state.tasks.currentPageIds;
 
 export const selectPageInfo = createSelector(
   [selectTaskPage, selectTaskPageSize, selectTaskTotal],
