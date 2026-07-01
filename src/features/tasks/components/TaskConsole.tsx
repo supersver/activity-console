@@ -181,6 +181,7 @@ export function TaskConsole() {
           <TaskDetailPanel
             error={selectedTaskError}
             isFetching={isSelectedTaskFetching}
+            onClose={() => setSelectedId(null)}
             task={selectedTaskForPanel}
           />
         )}
