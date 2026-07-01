@@ -13,6 +13,11 @@ export interface Assignee {
   name: string;
 }
 
+export interface TaskMeta {
+  priority?: "high" | "medium" | "low";
+  note?: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -21,7 +26,7 @@ export interface Task {
   assignee: Assignee | null;
   annotationCount: number;
   updatedAt: number; // always epoch ms
-  meta: Record<string, unknown>;
+  meta: TaskMeta;
 }
 
 export interface TasksPage {

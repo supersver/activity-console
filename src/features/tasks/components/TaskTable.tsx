@@ -1,6 +1,6 @@
 import type { Task } from "../types";
 import { formatDate } from "../utils/taskFormat";
-import { TaskStatusBadge } from "./TaskStatusBadge";
+import { TaskPriorityBadge, TaskStatusBadge } from "./TaskBadge";
 
 interface TaskTableProps {
   isInitialLoading: boolean;
@@ -43,6 +43,7 @@ export function TaskTable({
             <th className="px-4 py-3 font-semibold">Status</th>
             <th className="px-4 py-3 font-semibold">Assignee</th>
             <th className="px-4 py-3 font-semibold">Annotations</th>
+            <th className="px-4 py-3 font-semibold">Priority</th>
             <th className="px-4 py-3 font-semibold">Updated</th>
           </tr>
         </thead>
@@ -67,6 +68,13 @@ export function TaskTable({
                 {task.assignee?.name ?? "Unassigned"}
               </td>
               <td className="px-4 py-3">{task.annotationCount}</td>
+              <td className="px-4 py-3">
+                {task?.meta?.priority ? (
+                  <TaskPriorityBadge priority={task?.meta?.priority} />
+                ) : (
+                  "-"
+                )}
+              </td>
               <td className="px-4 py-3">{formatDate(task.updatedAt)}</td>
             </tr>
           ))}

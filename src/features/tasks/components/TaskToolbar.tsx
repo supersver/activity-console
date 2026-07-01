@@ -44,7 +44,7 @@ export function TaskToolbar({
     <div className="grid gap-3 border-b border-zinc-200 bg-white p-4 md:grid-cols-[minmax(220px,1fr)_150px_160px_150px_140px]">
       <input
         className="rounded border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
-        placeholder="Search title, id, assignee"
+        placeholder="Search task, id, assignee"
         value={search}
         onChange={(event) => onSearchChange(event.target.value)}
       />

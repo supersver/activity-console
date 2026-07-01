@@ -32,7 +32,7 @@ export function TaskConsole() {
   const [type, setType] = useState<TaskType | "all">("all");
   const [status, setStatus] = useState<TaskStatus | "all">("all");
   const [sortBy, setSortBy] = useState<TaskSortBy>("updatedAt");
-  const [sortDirection, setSortDirection] = useState<TaskSortDirection>("desc");
+  const [sortDirection, setSortDirection] = useState<TaskSortDirection>("asc");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useTaskFeed();
@@ -90,23 +90,19 @@ export function TaskConsole() {
     <main className="min-h-screen bg-zinc-100 text-zinc-950">
       <header className="border-b border-zinc-200 bg-white px-6 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold">Activity Console</h1>
-              {wsStatus === "open" && (
-                <span className="relative flex size-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex size-3 rounded-full bg-green-500"></span>
-                </span>
-              )}
-              <p className="mt-1 text-sm text-zinc-600">{total} total tasks</p>
-            </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-semibold">Activity Console</h1>
+            {wsStatus === "open" && (
+              <span className="relative flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex size-3 rounded-full bg-green-500"></span>
+              </span>
+            )}
+            <p className="mt-1 text-sm text-zinc-600">{total} total tasks</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="rounded border border-zinc-200 bg-zinc-50 px-3 py-2">
-              Last event: {lastLiveEvent?.replace(".", " ") ?? "none"}
-            </span>
-          </div>
+          <span className="rounded border border-zinc-200 bg-zinc-50 px-3 py-2">
+            Last event: {lastLiveEvent?.replace(".", " ") ?? "none"}
+          </span>
         </div>
       </header>
 

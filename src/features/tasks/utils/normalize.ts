@@ -4,6 +4,7 @@ import type {
   TaskStatus,
   TasksPage,
   TaskType,
+  TaskMeta,
 } from "@/features/tasks/types";
 
 /**
@@ -17,6 +18,8 @@ import type {
  *   Unparseable → 0, not Date.now() — broken data should sort as oldest, not newest.
  * - All drops/coercions are console.warn'd, never silent.
  */
+
+const VALID_PRIORITY = new Set(["high", "medium", "low"]);
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
@@ -57,6 +60,18 @@ function normalizeCount(raw: unknown): number {
     : 0;
 }
 
+function normalizeMeta(raw: unknown): TaskMeta {
+  if (!isRecord(raw)) return {};
+  const { priority, note, ...rest } = raw;
+  return {
+    ...(typeof priority === "string" && VALID_PRIORITY.has(priority)
+      ? { priority: priority as TaskMeta["priority"] }
+      : {}),
+    ...(typeof note === "string" ? { note } : {}),
+    ...rest,
+  };
+}
+
 function normalizeUpdatedAt(raw: unknown): number {
   if (typeof raw === "number" && Number.isFinite(raw)) return raw;
   if (typeof raw === "string") {
@@ -84,7 +99,7 @@ function normalizeTask(raw: unknown): Task | null {
     assignee: normalizeAssignee(raw.assignee),
     annotationCount: normalizeCount(raw.annotationCount),
     updatedAt: normalizeUpdatedAt(raw.updatedAt),
-    meta: isRecord(raw.meta) ? raw.meta : {},
+    meta: normalizeMeta(raw.meta),
   };
 }
 
@@ -113,5 +128,6 @@ export {
   normalizeUpdatedAt,
   normalizeTasksPage,
   normalizeTask,
+  normalizeMeta,
   isRecord,
 };

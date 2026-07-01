@@ -1,7 +1,7 @@
 import { Notice } from "@/components/Notice";
 import type { Task } from "../types";
 import { errorMessage, formatDate } from "../utils/taskFormat";
-import { TaskStatusBadge } from "./TaskStatusBadge";
+import { TaskStatusBadge } from "./TaskBadge";
 
 interface TaskDetailPanelProps {
   error: unknown;
