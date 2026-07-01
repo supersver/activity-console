@@ -36,7 +36,11 @@ const STATUS_MAP: Record<string, TaskStatus> = {
 
 function normalizeStatus(raw: unknown): TaskStatus {
   if (typeof raw !== "string") return "unknown";
-  return STATUS_MAP[raw.toLowerCase().replace(/[\s-]+/g, "_")] ?? "unknown";
+  return (
+    STATUS_MAP[raw] ??
+    STATUS_MAP[raw.toLowerCase().replace(/[\s-]+/g, "_")] ??
+    "unknown"
+  );
 }
 
 function normalizeType(raw: unknown): TaskType {
