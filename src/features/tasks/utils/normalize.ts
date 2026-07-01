@@ -26,6 +26,7 @@ const STATUS_MAP: Record<string, TaskStatus> = {
   inprogress: "in_progress",
   in_progress: "in_progress",
   qa: "qa",
+  QA: "QA",
   blocked: "blocked",
   done: "done",
 };

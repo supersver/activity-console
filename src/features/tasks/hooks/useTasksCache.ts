@@ -18,7 +18,7 @@ function runWhenIdle(work: () => void) {
     return;
   }
 
-  window.setTimeout(work, 0);
+  globalThis.setTimeout(work, 0);
 }
 
 export function useTasksCache(

@@ -6,7 +6,12 @@ export const store = configureStore({
     tasks: tasksReducer,
     [tasksApi.reducerPath]: tasksApi.reducer,
   },
-  middleware: (getDefault) => getDefault().concat(tasksApi.middleware),
+  middleware: (getDefault) =>
+    getDefault({
+      serializableCheck: {
+        warnAfter: 128,
+      },
+    }).concat(tasksApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

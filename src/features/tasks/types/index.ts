@@ -3,6 +3,7 @@ export type TaskStatus =
   | "todo"
   | "in_progress"
   | "qa"
+  | "QA"
   | "blocked"
   | "done"
   | "unknown";

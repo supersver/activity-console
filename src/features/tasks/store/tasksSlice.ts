@@ -1,4 +1,5 @@
 import {
+  createSelector,
   createEntityAdapter,
   createSlice,
   type PayloadAction,
@@ -179,12 +180,14 @@ export const tasksReducer = tasksSlice.reducer;
 export default tasksReducer;
 
 export const selectWsStatus = (state: RootState) => state.tasks.wsStatus;
+export const selectTaskPage = (state: RootState) => state.tasks.page;
+export const selectTaskPageSize = (state: RootState) => state.tasks.pageSize;
+export const selectTaskTotal = (state: RootState) => state.tasks.total;
 
-export const selectPageInfo = (state: RootState) => ({
-  page: state.tasks.page,
-  pageSize: state.tasks.pageSize,
-  total: state.tasks.total,
-});
+export const selectPageInfo = createSelector(
+  [selectTaskPage, selectTaskPageSize, selectTaskTotal],
+  (page, pageSize, total) => ({ page, pageSize, total }),
+);
 
 export const selectDataSource = (state: RootState) => state.tasks.dataSource;
 export const selectCachedAt = (state: RootState) => state.tasks.cachedAt;
